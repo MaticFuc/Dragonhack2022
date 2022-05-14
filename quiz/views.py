@@ -6,12 +6,14 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import FormView
+
+import utils.teachify
 from .forms import QuestionForm
 from .models import Quiz, Category, Progress, Sitting, Question
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from utils import teachify
+from utils import MCQGenerator as MCG
 
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
@@ -269,13 +271,16 @@ def logout_user(request):
 def poskus(request):
     if request.method == "POST":
         search = request.POST['search']
-        #print("Searchhhhhh")
+        print("Searchhhhhh")
         try:
-            result = teachify.form_query("MultipleChoice",search) #No of sentences that you want as output
-
-            #print(result)
+            article = utils.teachify.get_article(search)
+            result = MCG.get_questions(article) #No of sentences that you want as output
+            print("Result je prisel skozi!!!")
+            print(result)
+            q = Question.objects.create(content="To je vprašanje")
+            #print(Question.objects.all())
         except:
-            return render(request, "first.html", {result})
+            return render(request, "first.html", {})
         #return render(request,"first.html",{"result":result})
-        return render(request,QuizTake,{})
+        return render(request,"first.html",{})
     return render(request, 'first.html', {})

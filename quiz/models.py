@@ -509,7 +509,6 @@ class Sitting(models.Model):
         total = self.get_max_score
         return answered, total
 
-
 class Question(models.Model):
     """
     Base class for all question types.
