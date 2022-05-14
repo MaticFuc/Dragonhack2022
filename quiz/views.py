@@ -273,13 +273,17 @@ def poskus(request):
         search = request.POST['search']
         print("Searchhhhhh")
         try:
-            article = utils.teachify.get_article(search)
+            article = utils.teachify.get_article(search).strip()[:5000]
+            print('article je ok')
+            print(article)
+            print('start get vprasanje')
             result = MCG.get_questions(article) #No of sentences that you want as output
             print("Result je prisel skozi!!!")
             print(result)
             q = Question.objects.create(content="To je vprašanje")
             #print(Question.objects.all())
-        except:
+        except Exception as e:
+            print(e)
             return render(request, "first.html", {})
         #return render(request,"first.html",{"result":result})
         return render(request,"first.html",{})
