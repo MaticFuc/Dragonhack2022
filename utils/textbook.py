@@ -1,11 +1,12 @@
 import requests
-import pytesseract
-from pdf2image import convert_from_path
+from libgen_api import LibgenSearch
+import pdftotext
 
 #
 # This file is for processing textbook PDFs using OCR
 # If this is not possible it will return an Error
 #
+
 
 def find_textbook(textbook_name):
     """
@@ -14,20 +15,17 @@ def find_textbook(textbook_name):
     :type textbook_name: str
     :return:
     """
-    id = ""
-    url = "https://open.umn.edu/opentextbooks/textbooks.json"
-    textbooks = requests.get(url, params={'term':textbook_name, 'page':1}).json()["data"]
-    for textbook in textbooks:
-        formats = textbook["formats"]
-        for format in formats:
-            if format["format"] == "PDF":
-                id = format["id"]
-                url = format["url"]
-        if id != "":
-            break
-    #url = "https://open.umn.edu/opentextbooks/formats/" + str(id)
+    s = LibgenSearch()
+    results = s.search_title(textbook_name)
+    item_to_download = results[0]
+    download_links = s.resolve_download_links(item_to_download)
+    url = download_links['GET']
     textbook = requests.get(url)
-    return textbook
+    f = open("test.pdf","wb")
+    f.write(bytes(textbook.content))
+    f.close()
+
+    return convert_pdf_to_text("test.pdf")
 
 def convert_pdf_to_text(textbook_path):
     """
@@ -36,13 +34,13 @@ def convert_pdf_to_text(textbook_path):
     :type textbook_path: str
     :return: String object with pdf text
     """
-    pages = convert_from_path(textbook_path, 5)
-    file = open("result" + ".txt","w")
-    for pageNum, imgBlob in enumerate(pages):
-        text = pytesseract.image_to_string(imgBlob, lang='eng')
-        file.write(text)
-    file.close()
+    with open(textbook_path, "rb") as f:
+        pdf = pdftotext.PDF(f)
+    print(pdf)
+    return "".join(list(pdf))
 
 if __name__ == "__main__":
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    convert_pdf_to_text("Financial-Strategy-for-Public-Managers-1628448595.pdf")
+    print(convert_pdf_to_text(""))
+    #pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    #convert_pdf_to_text("Financial-Strategy-for-Public-Managers-1628448595.pdf")
+#%%
