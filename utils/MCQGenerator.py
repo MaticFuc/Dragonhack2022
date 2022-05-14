@@ -157,8 +157,8 @@ def get_distractors_conceptnet(word):
 
 
 
+model = Summarizer()
 def get_questions(full_text):
-    model = Summarizer()
     result = model(full_text, min_length=60, max_length=500, ratio=0.4)
     print('Povzetek')
     summarized_text = ''.join(result)
