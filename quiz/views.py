@@ -11,7 +11,7 @@ from .models import Quiz, Category, Progress, Sitting, Question
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-import wikipedia
+from utils import teachify
 
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
@@ -271,9 +271,11 @@ def poskus(request):
         search = request.POST['search']
         #print("Searchhhhhh")
         try:
-            result = wikipedia.summary(search,sentences = 3) #No of sentences that you want as output
+            result = teachify.form_query("MultipleChoice",search) #No of sentences that you want as output
+
             #print(result)
         except:
-            return render(request, "first.html", {})
-        return render(request,"first.html",{"result":result})
+            return render(request, "first.html", {result})
+        #return render(request,"first.html",{"result":result})
+        return render(request,QuizTake,{})
     return render(request, 'first.html', {})
