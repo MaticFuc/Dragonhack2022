@@ -1,6 +1,6 @@
 import openai
 import requests
-
+import re
 #
 # Teachify is supposed to be a program that is supposed to help people with functional literacy
 # It initializes a prototype GUI from which you load all of the necessary parameters
@@ -45,6 +45,9 @@ def clean_article(article):
     idx = article.find("== Further reading ==")
     if idx != None:
         article = article[:idx]
+    article = ' '.join([ token.strip() for token in re.split('==.*==',article)])
+    article = article.replace('\n',' ').replace('  ',' ')
+
     return article
 
 def form_query(prompt,article_name="",answers=""):
