@@ -7,7 +7,6 @@ CHOICES = (
     ('WFI', 'Wikipedia - Fill in'),
     ('TMC', 'Textbook - Multiple choice'),
     ('TFI', 'Textbook - Fill in'),
-    ('TU', 'Textbook - Upload'),
 )
 
 class QuestionForm(forms.Form):
@@ -23,7 +22,7 @@ class TypeForm(forms.Form):
     
     
 class AppForm(forms.Form):
-
+    text_area = forms.CharField(widget=forms.Textarea(attrs={'name':'body', 'rows':'10', 'cols':'20'}))
     WMC = forms.CharField(label="App type", widget=forms.Select(choices = CHOICES))
     query = forms.CharField(label="query", max_length = 100)
     class Meta:
