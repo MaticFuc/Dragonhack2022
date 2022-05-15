@@ -2,10 +2,7 @@ import openai
 import requests
 import re
 #
-# Teachify is supposed to be a program that is supposed to help people with functional literacy
-# It initializes a prototype GUI from which you load all of the necessary parameters
-# The main idea is that it creates answers and checks if you answered them correctly
-# You are also able to obtain the summary for the article (and export all of the results
+# Learnify is supposed to be a program that is supposed to help people with functional literacy
 #
 
 questions = ""
