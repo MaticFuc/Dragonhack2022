@@ -18,6 +18,7 @@ from django.contrib import messages
 from utils import MCQGenerator as MCG
 from utils import MC_questions_openai as MCA
 
+
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
     @method_decorator(permission_required('quiz.view_sittings'))
@@ -271,17 +272,22 @@ def logout_user(request):
 
 def poskus(request):
     if request.method == "POST":
-        search = request.POST['search']
+        #print(request.POST)
+        search = request.POST['query']
+        select = request.POST['WMC']
         #print("Searchhhhhh")
         try:
-            article = utils.teachify.get_article(search)[:2000]
+            if select in ['WMC', 'WFI']:
+                article = utils.teachify.get_article(search)[:2000]
+            else:
+                article = utils.textbook.find_textbook(search)[:2000]
             if article == '':
                 return render(request, "first.html", {})
              #No of sentences that you want as output
-            print("Result je prisel skozi!!!")
+            #print("Result je prisel skozi!!!")
             #print(result)
             q = Quiz.objects.create(title="Quiz about "+search, url=search+str(random.randint(0,1000000)))
-            if False: #for fill in questions!
+            if select in ['WFI', 'TFI']: #for fill in questions!
                 result = MCG.get_questions(article)
                 for quest in result:
                     x = MCQQuestion.objects.create(content=quest['sentence'])
@@ -293,8 +299,8 @@ def poskus(request):
                             y = Answer.objects.create(content=a, correct=False, question = x)
                         #y.question.add(x)
                     x.quiz.add(q)
-            if True: #for ABCD choices
-                result = MCA.generate_MC_questions(article, 3, 3, api_key= "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")
+            else: #for ABCD choices
+                result = MCA.generate_MC_questions(article, 3, 3, api_key= "sk-qcgPCCbKfmoRMUeCw3yZT3BlbkFJI2GVpPOaA2wwt0szQJm")
                 for quest in result['questions']:
                     quest['false_answers'] = set(quest['false_answers'])
                     if len(quest['false_answers']) < 2:
