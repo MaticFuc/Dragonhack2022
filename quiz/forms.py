@@ -1,6 +1,5 @@
 from django import forms
 from django.forms.widgets import RadioSelect
-from .models import AppModel
 
 CHOICES = (
     ('WMC', 'Wikipedia - Multiple choice'),
@@ -22,9 +21,9 @@ class TypeForm(forms.Form):
     
     
 class AppForm(forms.Form):
-    text_area = forms.CharField(widget=forms.Textarea(attrs={'name':'body', 'rows':'10', 'cols':'20'}))
+    text_area = forms.CharField(widget=forms.Textarea(attrs={'name':'body', 'rows':'10', 'cols':'20'}),required = False)
     WMC = forms.CharField(label="App type", widget=forms.Select(choices = CHOICES))
-    query = forms.CharField(label="query", max_length = 100)
+    query = forms.CharField(label="query", max_length = 100,required = False)
     class Meta:
         pass
         #self.fields["answers"] = forms.ChoiceField(choices=choice_list, widget=RadioSelect)
