@@ -17,7 +17,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from utils import MCQGenerator as MCG
 from utils import MC_questions_openai as MCA
-
+import utils.textbook
+from utils import true_false
 
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
@@ -274,20 +275,23 @@ def poskus(request):
     if request.method == "POST":
         #print(request.POST)
         search = request.POST['query']
-        select = request.POST['WMC']
+        select = request.POST['app_choice']
+        source = request.POST['source_choice']
         #print("Searchhhhhh")
         try:
-            if select in ['WMC', 'WFI']:
+            if source in ['W']:
                 article = utils.teachify.get_article(search)[:2000]
+            elif source == 'TA':
+                article = request.POST['text_area']
             else:
                 article = utils.textbook.find_textbook(search)[:2000]
             if article == '':
-                return render(request, "first.html", {})
+                return render(request, "first.html", {'error':"Error: Empty input!"})
              #No of sentences that you want as output
             #print("Result je prisel skozi!!!")
             #print(result)
             q = Quiz.objects.create(title="Quiz about "+search, url=search+str(random.randint(0,1000000)))
-            if select in ['WFI', 'TFI']: #for fill in questions!
+            if select in ['FI']: #for fill in questions!
                 result = MCG.get_questions(article)
                 for quest in result:
                     x = MCQQuestion.objects.create(content=quest['sentence'])
@@ -299,8 +303,23 @@ def poskus(request):
                             y = Answer.objects.create(content=a, correct=False, question = x)
                         #y.question.add(x)
                     x.quiz.add(q)
+            elif select == 'TF': #for true false statements
+                result = true_false.generate_true_and_false_statements(article)
+                print(result)
+                for i in range(3):
+                    #quest['false_answers'] = set(quest['false_statements'])
+
+                    x = MCQQuestion.objects.create(content="Označi pravilno trditev.")
+                    y = Answer.objects.create(content=result['true_statements'][random.randint(0, len(result['true_statements'])-1)], correct=True, question=x)
+                    for a in range(2):
+                        y = Answer.objects.create(content=result['false_statements'][random.randint(0, len(result['false_statements'])-1)], correct=False, question=x)
+
+                        # y = Answer.objects.create(content=a, correct=False, question=x)
+                        # y.question.add(x)
+                    x.quiz.add(q)
+
             else: #for ABCD choices
-                result = MCA.generate_MC_questions(article, 3, 3, api_key= "sk-qcgPCCbKfmoRMUeCw3yZT3BlbkFJI2GVpPOaA2wwt0szQJm")
+                result = MCA.generate_MC_questions(article, 3, 3, api_key= "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")
                 for quest in result['questions']:
                     quest['false_answers'] = set(quest['false_answers'])
                     if len(quest['false_answers']) < 2:
