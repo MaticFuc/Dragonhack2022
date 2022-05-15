@@ -1,4 +1,5 @@
 api_key =  "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" #jus
+import openai
 
 def generate_questions_from_text(text, api_key, num_questions=1):
     query = "Generate a question from this text: " + text + " =>"
@@ -22,7 +23,7 @@ def generate_questions_from_text(text, api_key, num_questions=1):
     for i in range(num_questions): 
         result = response["choices"][i]["text"]
         generated_questions.append(result)
-        print(result)
+        #print(result)
         #splitted = result.split("\n\n")
         #question = splitted[1]
         #answer = splitted[2]
@@ -32,7 +33,7 @@ def generate_questions_from_text(text, api_key, num_questions=1):
     return generated_questions
 
 
-def generate_answer_to_the_question(question):
+def generate_answer_to_the_question(question, article):
 
     response_answer = openai.Answer.create(
       search_model="ada",
@@ -77,7 +78,7 @@ def generate_false_answers(true_answer, num_false_answers):
     return false_answers
 
 
-def generate_MC_questions(text, num_questions, num_false_answers, api_key):
+def generate_MC_questions(article, num_questions, num_false_answers, api_key=api_key):
 
     text_multiple_choice_qa_dict = {"questions": []}
 
@@ -86,7 +87,7 @@ def generate_MC_questions(text, num_questions, num_false_answers, api_key):
     for q in questions:
         question_dict = {"question":q}
         #print(f"generated question: {q}")
-        answer = generate_answer_to_the_question(q)
+        answer = generate_answer_to_the_question(q, article)
         question_dict["true_answer"] = answer
         #print(f"generated true answer: {answer}")
         false_answers = generate_false_answers(answer, num_false_answers)

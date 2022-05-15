@@ -16,6 +16,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from utils import MCQGenerator as MCG
+from utils import MC_questions_openai as MCA
 
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
@@ -273,21 +274,37 @@ def poskus(request):
         search = request.POST['search']
         #print("Searchhhhhh")
         try:
-            article = utils.teachify.get_article(search)
-            result = MCG.get_questions(article) #No of sentences that you want as output
+            article = utils.teachify.get_article(search)[:2000]
+            if article == '':
+                return render(request, "first.html", {})
+             #No of sentences that you want as output
             print("Result je prisel skozi!!!")
-            print(result)
-            q = Quiz.objects.create(title="Naslov kviza je "+search, url="kvizko2")
-            for quest in result:
-                x = MCQQuestion.objects.create(content=quest['sentence'])
+            #print(result)
+            q = Quiz.objects.create(title="Quiz about "+search, url=search+str(random.randint(0,1000000)))
+            if False: #for fill in questions!
+                result = MCG.get_questions(article)
+                for quest in result:
+                    x = MCQQuestion.objects.create(content=quest['sentence'])
 
-                for a in quest['choices']:
-                    if a == quest['true']:
-                        y = Answer.objects.create(content=a, correct=True, question = x)
-                    else:
-                        y = Answer.objects.create(content=a, correct=False, question = x)
-                    #y.question.add(x)
-                x.quiz.add(q)
+                    for a in quest['choices']:
+                        if a == quest['true']:
+                            y = Answer.objects.create(content=a, correct=True, question = x)
+                        else:
+                            y = Answer.objects.create(content=a, correct=False, question = x)
+                        #y.question.add(x)
+                    x.quiz.add(q)
+            if True: #for ABCD choices
+                result = MCA.generate_MC_questions(article, 3, 3, api_key= "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")
+                for quest in result['questions']:
+                    x = MCQQuestion.objects.create(content=quest['question'])
+                    y = Answer.objects.create(content=quest['true_answer'], correct=True, question=x)
+                    for a in quest['false_answers']:
+
+                        y = Answer.objects.create(content=a, correct=False, question=x)
+
+                        #y = Answer.objects.create(content=a, correct=False, question=x)
+                        # y.question.add(x)
+                    x.quiz.add(q)
             #print(MCQQuestion.objects.all())
         except Exception as e:
             message = traceback.format_exc()
