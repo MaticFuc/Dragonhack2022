@@ -5,19 +5,14 @@
 
 <form action="/poskus/" method="post">
 
-  <div class="form-group">
-    <label for="exampleFormControlFile1">Example file input</label>
-    <input type="file" class="form-control-file" id="exampleFormControlFile1">
-  </div>
 
-    <h1>Wikipedia Search</h1>
+	
+	{% csrf_token %}
+	{{ form.as_p }}
+        
+	<button type="submit">Search</button>
+		
+</form>
 
-        {% csrf_token %}
-        <input type="text" name="search">
-        <button type="submit">Search</button>
-    </form>
-    {% if result %}
-        {{result}}
-    {% endif %}
 
 {% endblock  %}

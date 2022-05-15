@@ -1,12 +1,13 @@
 from django import forms
 from django.forms.widgets import RadioSelect
+from .models import AppModel
 
 CHOICES = (
-    ('US', 'United States'),
-    ('FR', 'France'),
-    ('CN', 'China'),
-    ('RU', 'Russia'),
-    ('IT', 'Italy'),
+    ('WMC', 'Wikipedia - Multiple choice'),
+    ('WFI', 'Wikipedia - Fill in'),
+    ('TMC', 'Textbook - Multiple choice'),
+    ('TFI', 'Textbook - Fill in'),
+    ('TU', 'Textbook - Upload'),
 )
 
 class QuestionForm(forms.Form):
@@ -19,4 +20,13 @@ class QuestionForm(forms.Form):
 class TypeForm(forms.Form):
     your_name = forms.CharField(label='Your name', max_length=100)
 
-    favorite_fruit = forms.CharField(label='What is your favorite fruit?', widget=forms.Select(choices=CHOICES))
+    
+    
+class AppForm(forms.Form):
+
+    WMC = forms.CharField(label="App type", widget=forms.Select(choices = CHOICES))
+    query = forms.CharField(label="query", max_length = 100)
+    class Meta:
+        pass
+        #self.fields["answers"] = forms.ChoiceField(choices=choice_list, widget=RadioSelect)
+        #fields = ["app_choice"]
