@@ -159,8 +159,9 @@ def get_distractors_conceptnet(word):
 
 model = Summarizer()
 def get_questions(full_text):
+    print('Zacni povzetek')
     result = model(full_text, min_length=60, max_length=500, ratio=0.4)
-    print('Povzetek')
+    print('Konec povzetek')
     summarized_text = ''.join(result)
 
     keywords = get_nouns_multipartite(full_text)
@@ -197,8 +198,14 @@ def get_questions(full_text):
 
     questions = []
     print('Ustvari questions')
+    setntence_set = set()
+
     for each in key_distractor_list:
         sentence = keyword_sentence_mapping[each][0]
+        if sentence in setntence_set:
+            continue
+        setntence_set.add(sentence)
+
         pattern = re.compile(each, re.IGNORECASE)
         output = pattern.sub(" _______ ", sentence)
 
