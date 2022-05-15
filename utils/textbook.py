@@ -37,7 +37,7 @@ def convert_pdf_to_text(textbook_path):
     with open(textbook_path, "rb") as f:
         pdf = pdftotext.PDF(f)
     print(pdf)
-    return "".join(list(pdf))
+    return "".join(list(pdf)[10:])
 
 if __name__ == "__main__":
     print(convert_pdf_to_text(""))
