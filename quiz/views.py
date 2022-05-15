@@ -10,7 +10,7 @@ import traceback
 
 from mcq.models import MCQQuestion, Answer
 import utils.teachify
-from .forms import QuestionForm
+from .forms import QuestionForm, AppForm
 from .models import Quiz, Category, Progress, Sitting, Question
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -318,4 +318,5 @@ def poskus(request):
         #return render(request,"QuizTake(None)",{})
 
         return redirect('../'+q.url+'/take/', {})
-    return render(request, 'first.html', {})
+    form = AppForm()
+    return render(request, 'first.html', {"form":form})
