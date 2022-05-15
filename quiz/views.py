@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import FormView
-impor traceback
+import traceback
 
 from mcq.models import MCQQuestion, Answer
 import utils.teachify
