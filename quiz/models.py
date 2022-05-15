@@ -386,9 +386,11 @@ class Sitting(models.Model):
         """
         if not self.question_list:
             return False
-
+        print("---------",self.question_list)
         first, _ = self.question_list.split(',', 1)
         question_id = int(first)
+        print(question_id)
+        #return Question.objects.get_subclass(id=20)
         return Question.objects.get_subclass(id=question_id)
 
     def remove_first_question(self):

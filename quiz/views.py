@@ -6,7 +6,9 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import FormView
+impor traceback
 
+from mcq.models import MCQQuestion, Answer
 import utils.teachify
 from .forms import QuestionForm
 from .models import Quiz, Category, Progress, Sitting, Question
@@ -237,8 +239,6 @@ class QuizTake(FormView):
         return render(self.request, 'result.html', results)
 
 
-
-
 def index(request):
     return render(request, 'index.html', {})
 
@@ -271,20 +271,30 @@ def logout_user(request):
 def poskus(request):
     if request.method == "POST":
         search = request.POST['search']
-        print("Searchhhhhh")
+        #print("Searchhhhhh")
         try:
-            article = utils.teachify.get_article(search).strip()[:5000]
-            print('article je ok')
-            print(article)
-            print('start get vprasanje')
+            article = utils.teachify.get_article(search)
             result = MCG.get_questions(article) #No of sentences that you want as output
             print("Result je prisel skozi!!!")
             print(result)
-            q = Question.objects.create(content="To je vprašanje")
-            #print(Question.objects.all())
+            q = Quiz.objects.create(title="Naslov kviza je "+search, url="kvizko2")
+            for quest in result:
+                x = MCQQuestion.objects.create(content=quest['sentence'])
+
+                for a in quest['choices']:
+                    if a == quest['true']:
+                        y = Answer.objects.create(content=a, correct=True, question = x)
+                    else:
+                        y = Answer.objects.create(content=a, correct=False, question = x)
+                    #y.question.add(x)
+                x.quiz.add(q)
+            #print(MCQQuestion.objects.all())
         except Exception as e:
-            print(e)
+            message = traceback.format_exc()
+            print(message)
             return render(request, "first.html", {})
         #return render(request,"first.html",{"result":result})
-        return render(request,"first.html",{})
+        #return render(request,"QuizTake(None)",{})
+
+        return redirect('../'+q.url+'/take/', {})
     return render(request, 'first.html', {})
