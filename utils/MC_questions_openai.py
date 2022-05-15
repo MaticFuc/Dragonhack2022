@@ -83,7 +83,7 @@ def generate_MC_questions(article, num_questions, num_false_answers, api_key=api
     text_multiple_choice_qa_dict = {"questions": []}
 
     questions = generate_questions_from_text(article, api_key, num_questions)
-
+    questions = set(questions)
     for q in questions:
         question_dict = {"question":q}
         #print(f"generated question: {q}")

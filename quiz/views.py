@@ -294,8 +294,12 @@ def poskus(request):
                         #y.question.add(x)
                     x.quiz.add(q)
             if True: #for ABCD choices
-                result = MCA.generate_MC_questions(article, 3, 3, api_key= "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")
+                result = MCA.generate_MC_questions(article, 3, 3, api_key= "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")
                 for quest in result['questions']:
+                    quest['false_answers'] = set(quest['false_answers'])
+                    if len(quest['false_answers']) < 2:
+                        print('Premalo false_answers')
+                        continue
                     x = MCQQuestion.objects.create(content=quest['question'])
                     y = Answer.objects.create(content=quest['true_answer'], correct=True, question=x)
                     for a in quest['false_answers']:
