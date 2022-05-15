@@ -1,11 +1,16 @@
 from django import forms
 from django.forms.widgets import RadioSelect
 
-CHOICES = (
-    ('WMC', 'Wikipedia - Multiple choice'),
-    ('WFI', 'Wikipedia - Fill in'),
-    ('TMC', 'Textbook - Multiple choice'),
-    ('TFI', 'Textbook - Fill in'),
+CHOICES_SOURCE = (
+    ('W','Wikipedia'),
+    ('T','Textbook'),
+    ('TA','Text Area'),
+)
+
+CHOICES_APP = (
+    ('MC', 'Multiple choice'),
+    ('FI', 'Fill in'),
+    ('TF', 'True/False')
 )
 
 class QuestionForm(forms.Form):
@@ -22,7 +27,8 @@ class TypeForm(forms.Form):
     
 class AppForm(forms.Form):
     text_area = forms.CharField(widget=forms.Textarea(attrs={'name':'body', 'rows':'10', 'cols':'20'}),required = False)
-    WMC = forms.CharField(label="App type", widget=forms.Select(choices = CHOICES))
+    app_choice = forms.CharField(label="App type", widget=forms.Select(choices = CHOICES_APP))
+    source_choice = forms.CharField(label="App type", widget=forms.Select(choices = CHOICES_SOURCE))
     query = forms.CharField(label="query", max_length = 100,required = False)
     class Meta:
         pass
